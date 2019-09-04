@@ -1,0 +1,215 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Section: Hyperbolic equations and numerical methods %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Hyperbolic equations and numerical methods}
+\label{sec:hyper-equations}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Finite Volume Method}
+\label{subsec:FVM}
+
+The system of partial differential equations in hydrodynamics (HD) and relativistic hydrodynamics (RHD), conforms a set of hyperbolic equations~\citep[see][]{leveque2002}.  These equations can be written in a fully conservative (with no sources terms) or balanced (with  sources terms) form:
+
+%%%%%%%%%%%%%%
+%% Equation %%
+%%%%%%%%%%%%%%
+\begin{equation}
+    \frac{\partial \mathbf{q} (\mathbf{u})}{\partial t} + \frac{\partial \mathbf{f}^i (\mathbf{u})}
+    {\partial x^i} = \mathbf{s}(\mathbf{u}),
+\label{eq:cons-1}
+\end{equation}
+
+\noindent where $\mathbf{q}$ are the conservative variables, $\mathbf{f}^i = ( \mathbf{f}^1 , \mathbf{f}^2 , \mathbf{f}^3 )$ are the fluxes of the conservative variables along the three spatial dimensions and $\mathbf{s}$ are the source terms, related to external force (e.g. gravity, cooling functions, etc) or geometrical effects. The vector $\mathbf{u}$ represents the primitive variables of the problem. Each one of these variables $\mathbf{q}$, $\mathbf{f}^i$, $\mathbf{s}$ and $\mathbf{u}$, is a set of $m$ quantities, where $m$ is the number of equations. Finding the solution to this system of equations means to find $\mathbf{u} (t,\bar{x})$. In order to numerically integrate equations~\eqref{eq:cons-1}, the FVM discretization is obtained in the following way. 
+
+Let us begin by considering a three-dimensional domain described in Cartesian coordinates\footnote{The specific case in cylindrical and spherical coordinates is discuss in Appendix~\ref{A:cylsph}}. This domain is then divided into a grid of $N_{x} \times N_{y} \times N_{z}$ cells (or control volumes), centered at $\bar{x}_{i,j,k} = (x_i,y_j,z_j)$, where the subindex $0 \leq i \leq N_x$, $0 \leq j \leq N_y$ and $0 \leq k \leq N_z$, represents the $i$-th, $j$-th and $k$-th position on the grid along each direction. Every cell has a volume $\Delta V := \Delta x \times \Delta y \times \Delta z$, this means that the cell interfaces along, for example, the $x$ direction, are defined at $x_{i + 1/2} := x_i + \Delta x / 2$ and $x_{i - 1/2} := x_i - \Delta x / 2$.
+
+By integrating equation~\eqref{eq:cons-1} over a control volume, we can obtain the semi-discrete form of equation~\eqref{eq:cons-1} for the FVM~\citep[cf.][]{leveque2002,toro2009}:
+%%%%%%%%%%%%%%
+%% Equation %%
+%%%%%%%%%%%%%%
+\begin{equation}
+\begin{split}
+    \frac{\mathrm{d} \mathbf{Q}_{i,j,k}}{\mathrm{d}t} = &- \frac{1}{\Delta x} \left[
+    \mathbf{{F}}^x_{i+1/2,j,k} - \mathbf{\hat{F}}^x_{i-1/2,j,k}
+    \right]\\
+    &- \frac{1}{\Delta y} \left[
+    \mathbf{{F}}^y_{i,j+1/2,k} - \mathbf{\hat{F}}^y_{i,j-1/2,k}
+    \right]\\ 
+    &- \frac{1}{\Delta z} \left[
+    \mathbf{{F}}^z_{i,j,k+1/2} - \mathbf{\hat{F}}^z_{i,j,k-1/2}
+    \right]\\
+    & + \mathbf{S}_{i,j,k},
+\end{split}
+\label{eq:disc}
+\end{equation}
+
+\noindent where we have defined the cell average of $\mathbf{q}$ and $\mathbf{s}$ as
+\begin{equation}
+    \mathbf{Q}_{i,j,k} := \frac{1}{\Delta V} \int_{x_{i - 1/2}}^{x_{i + 1/2}} \int_{y_{j - 1/2}}^{y_{j + 1/2}}
+    \int_{z_{k - 1/2}}^{z_{k + 1/2}} \mathbf{q} (t,\bar{x}) \, \mathrm{d}V,
+\end{equation}
+\begin{equation}
+    \mathbf{S}_{i,j,k} := \frac{1}{\Delta V} \int_{x_{i - 1/2}}^{x_{i + 1/2}} \int_{y_{j - 1/2}}^{y_{j + 1/2}}
+    \int_{z_{k - 1/2}}^{z_{k + 1/2}} \mathbf{s} (t,\bar{x}) \, \mathrm{d}V,
+\end{equation}
+
+\noindent and the average flux across the cell interface $x_{i + 1/2}$  as
+\begin{equation}
+    \mathbf{F}_{i+1/2,j,k}^x := \frac{1}{\Delta S_{i+1/2}} \int_{y_{j - 1/2}}^{y_{j + 1/2}} \int_{z_{k - 1/2}}^{z_{k + 1/2}} \mathbf{f}^x(t,\bar{x}_{i+1/2,j,k}) \mathrm{d} S_{i+1/2},
+\end{equation}
+
+\noindent where $\Delta S_{i+1/2}$ is the surface normal to $\mathbf{f}^x$ at $x_{i + 1/2 }$. In this particular case $\Delta S_{i+1/2} = \Delta y \Delta z$. For the $x_{i-1/2}$ interface and all the other fluxes, the definition is analogous. 
+
+%Substituting these definitions in the integration of equation~\eqref{eq:cons-1}, we obtain the discretization of the FVM~\citep[cf.][]{leveque2002,toro2009}:
+
+%\noindent where $\Delta t = t_{n+1} - t_n$, $\mathbf{Q}_{i,j,k}^n$ and $\mathbf{S}_{i,j,k}^n$ are the spatial mean value of $\mathbf{q}$ and $\mathbf{s}$, respectively, evaluated at the center of the control volume, at the time $t_n$. On the other hand, $\mathbf{\hat{F}}^i$ are the temporal mean value of the fluxes $\mathbf{f}^i$ along each spatial direction, evaluated at the boundary of the cells. The terms $\Delta x^i$, may vary depending on the specific geometry of the problem. The sub-index $i+1/2,j,k$ means that the flux  is evaluated at $\bar{x}_{i+1/2,j,k} = (x_i^1 + \Delta x^1/2, j , k)$.
+
+The average quantities $\mathbf{Q}_{i,j,k}$ and $\mathbf{S}_{i,j,k}$ may be computed in a simple way as the value of $\mathbf{q}$ and $\mathbf{s}$ at the center of the cell~\citep{leveque2002}. The numerical fluxes $\mathbf{{F}}^i$, on the other hand, are defined at the boundaries of each control volume, so their evaluation must depend on the values of $\mathbf{Q}$ on each side of the interface in which they are defined.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{High Resolution Shock Capturing Methods}
+\label{susec:HRSC}
+
+%% %% %% %%
+
+\subsubsection{Approximate Riemann Solver}
+\label{subsubsec:riemann_solver}
+
+In order to compute the fluxes across the cell interfaces, it is common to use a Godunov-type~\citep{godunov1959} method, which approaches the fluxes by using the information of the conservative variables in a cell and its neighbours. This method consists in solving a Riemann problem at each cell interface.
+
+The Riemann problem consists in an initial data of two constant states divided by an interface. For most hyperbolic systems, this problem can be solved exactly by analyzing the evolution of the solution along the characteristics of the equation~\citep[see][]{toro2009}. If we consider a Riemann problem on the boundary between to contiguous cells at a time $t_m$, it is possible to solve the problem in an exact or approximate form and, from this, obtain an expression for the numerical fluxes. These kind of algorithms are called \textit{Riemann solvers}, and are one of the most commonly used techniques for the so called \textit{high resolution shock capturing} (HRSC) methods.
+
+One the approximate Riemann solver we implemented in \textit{aztekas}, is the HLLE  formula~\citep{hll1983,einfeldt1988}:
+
+%%%%%%%%%%%%%%
+%% Equation %%
+%%%%%%%%%%%%%%
+\begin{equation}  
+   \mathbf{{F}} = \left\lbrace
+   \begin{array}{ccc}
+   \mathbf{f}^L & \mathrm{if} & \lambda_{-} \geq 0, \\
+   \frac{\lambda_{+} \mathbf{f}^L - \lambda_{-} \mathbf{f}^R +
+   \lambda_{-} \lambda_{+} \left( \mathbf{q}^R - \mathbf{q}^L
+\right)}{\lambda_{+} - \lambda_{-}} & \mathrm{if} & \lambda_{-} < 0 <
+\lambda_{+} ,\\ 
+   \mathbf{f}^R & \mathrm{if} & \lambda_{+} \leq 0 .
+   \end{array} 
+   \right.
+\label{eq:hll}
+\end{equation}
+
+\noindent where $\mathbf{f}^{\left\lbrace L,R \right\rbrace}$ and $\mathbf{q}^{\left\lbrace L,R \right\rbrace}$ are the fluxes and conservative variables of the left and right states in the Riemann problem set at the interface between two contiguous cells. This means that, for each control volume, there are two Riemann problems along each direction, one at each boundary $x_{i\pm 1/2}$, $y_{j \pm 1/2}$ and $z_{k \pm 1/2}$. The exact form for computing the right and left state is discuss in Appendix~\ref{A:reconst}.
+
+The values $\lambda_{-}$ and $\lambda_{+}$ represents the characteristic with the larger velocity going to the left and to the right, respectively. These quantities are determined by obtaining the eigenvalues of the Jacobian matrix $\mathcal{B} = \partial \mathbf{f}/ \partial \mathbf{q}$. This scheme turns out to be second order accurate over smooth solutions, but first-order near discontinuities like shock waves~\citep{toro2009}.
+
+The advantage of the HLLE scheme is that, in order to obtain the fluxes, only the eigenvalues of the matrix $\mathcal{B}^i$ are needed, unlike other methods like the Marquina~\citep{marquina1994} or the Roe~\citep{roe1981} approximate Riemman solvers, for which the eigenvectors are also needed. The disadvantage of the HLLE method is its dissipative nature, reason why it does not properly resolves contact discontinuities. To solve this problem, another characteristic velocity based method named HLLC has been developed for both HD~\citep[see][]{toro1994} and RHD~\citep[see][]{mignone2005}. HLLC is less dissipative than HLLE and better resolves the contact discontinuity. Both algorithms for the HD case are included in \textit{aztekas}, and their numerical implementation is discuss in Appendix~\ref{A:hll}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Polynomial Spatial Reconstruction Schemes}
+\label{subsubsec:reconst}
+
+As~\citet{delzanna2002} pointed out, when discontinuous solutions are
+of main interest, second-order total variation diminishing (TVD) schemes, coupled
+with Riemann solvers, are probably the best choice, for obtaining sharp resolution
+of discontinuities. In order to do this, we implement in \textit{aztekas}
+different types of spatial reconstructions schemes for the primitive variables. We use the
+MINMOD~\citep{roe1986}, MC~\citep{vanleer1977} and SUPERBEE~\citep{roe1986}
+linear reconstructions, which are second-order methods. We also implement a
+fifth-order weighted Essentially Non Oscillatory (WENO5) scheme~\citep{weno2004}, which uses a different approach for the reconstruction that leads to a better capture of discontinuities and non-linear effects~\citep{lora2015}. 
+
+It is not necessary to compute the spatial reconstruction of $\mathbf{u}$ over all the cell. The only values required in order to calculate the fluxes via a Riemann solver are the values ones that relay on the interfaces between contiguous control volumes. For each boundary, there have to be estimated the \textit{left} and $\textit{right}$ that generate the states of the Riemann problem.
+
+For example, in order to compute the approximate Riemann solver along the $x^1$ direction, and in complete analogy for $x^2$ and $x^3$, for a cell centered in $\bar{x}_{i,j,k}$, we have to reconstruct the values at $\bar{x}_{i+1/2,j,k}$ and $\bar{x}_{i-1/2,j,k}$. The implementation of  the spatial reconstruction and the algorithms of each scheme are discuss in Appendix~\ref{A:reconst}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Time integration}
+\label{subsubsec:tstep}
+
+For the temporal integration, we can write the FVM semi-discrete form as:
+
+%%%%%%%%%%%%%%
+%% Equation %%
+%%%%%%%%%%%%%%
+\begin{equation}
+    \begin{split}
+    \frac{\diff \mathbf{Q}_{i,j,k}}{\diff t} = \mathcal{R}(\mathbf{Q}),
+\end{split}
+\label{eq:semi-disc}
+\end{equation}
+
+\noindent where $\mathcal{R}(\mathbf{Q})$ is the right hand side of equation~\eqref{eq:disc}. In this way, diving the time interval into sub-intervals $[t_n,t_{n+1}]$, we can use an explicit time variation diminishing Runge-Kutta method~\citep{shu1988}, to integrate over time. In \textit{aztekas}, there are implemented the second order:
+
+%%%%%%%%%%%%%%
+%% Equation %%
+%%%%%%%%%%%%%%
+\begin{equation}
+\begin{split}
+    \mathbf{Q}_{i,j,k}^* &= \mathbf{Q}_{i,j,k}^n + \Delta t \mathcal{R}(\mathbf{Q}^n), \\
+    \mathbf{Q}_{i,j,k}^{n+1} &= \frac{1}{2} \left( \mathbf{Q}_{i,j,k}^n + \mathbf{Q}_{i,j,k}^* + \Delta t \mathcal{R}(\mathbf{Q}^*) \right),
+\end{split}
+\label{eq:rk2}
+\end{equation}
+
+%%%%%%%%%%%%%%
+%% Equation %%
+%%%%%%%%%%%%%%
+\noindent and the third order schemes:
+\begin{equation}
+\begin{split}
+    \mathbf{Q}_{i,j,k}^* &= \mathbf{Q}_{i,j,k}^n + \Delta t \mathcal{R}(\mathbf{Q}^n), \\
+    \mathbf{Q}_{i,j,k}^{**} &= \frac{1}{4} \left( 3\mathbf{Q}_{i,j,k}^n + \mathbf{Q}_{i,j,k}^* + \Delta t \mathcal{R}(\mathbf{Q}^*) \right), \\
+    \mathbf{Q}_{i,j,k}^{n+1} &= \frac{1}{3} \left( 3\mathbf{Q}_{i,j,k}^n + 2\mathbf{Q}_{i,j,k}^{**} + 2\Delta t \mathcal{R}(\mathbf{Q}^{**}) \right),
+\end{split}
+\label{eq:rk3}
+\end{equation}
+
+\noindent where $\Delta t$ is the time-step, that is usually computed using the standard CFL criterion~\citep{cfl1928} formula:
+
+%%%%%%%%%%%%%%
+%% Equation %%
+%%%%%%%%%%%%%%
+\begin{equation}
+    \Delta t = \mathcal{C} \times \mathrm{min} \left( \frac{\Delta x}{\mathrm{max}(|\lambda^x_\pm|)},\frac{\Delta y}{\mathrm{max}(|\lambda^y_\pm|)},\frac{\Delta z}{\mathrm{max}(|\lambda^z_\pm|)} \right),
+    \label{eq:cfl}
+\end{equation}
+
+\noindent where $\mathrm{max}(|\lambda_\pm|)$ are the maximum absolute value of the characteristic velocity along each direction and $\mathcal{C}$ is the Courant number~\citep[see][]{cfl1928}, which has a typical value less than 1.
+
+\subsubsection{Primitive Variable Recovery}
+\label{subsubsec:primitiverecovery}
+
+After the temporal evolution of the conservative variables, the primitive variables need to be recovered. This  step depends on the functional form of $\mathbf{q}$, and on whether or not it is possible to obtain $\mathbf{u}(\mathbf{q})$ analytically. In the case there is not an analytic recovery of the primitive variables, like in the RHD case, a transcendental algebraic equation has to be solved~\citep{riccardi2008}. 
+
+A different approach to overcome this, sometimes, thorny step, is the Primitive Variable Recovery Scheme (PVRS)~\citep[see][]{aguayo2018}, in which a direct time integration over the primitive variables is performed. The semi-discrete form of the PVRS is written as~\citep{aguayo2018}:
+%mantaining the same traditional flux reconstruction, like the one presented above but, instead of recovering the primitive variables from the conservative ones solving an algebraic system of equations, the method consist on left-multiplying $\mathcal{L}(\mathbf{Q})$ by the matrix $\mathcal{A} = (\partial \mathbf{q}/\partial \mathbf{u})^{-1}$. The formal discretization of the PVRS is written as~\citep{aguayo2018}:
+
+%%%%%%%%%%%%%%
+%% Equation %%
+%%%%%%%%%%%%%%
+\begin{equation}
+\begin{split}
+    \frac{\mathrm{d} \mathbf{U}_{i,j,k}}{\mathrm{d}t} =  &- \frac{1}{\Delta x} \mathcal{A}_{i,j,k} \cdot \left[
+    \mathbf{F}^x_{i+1/2,j,k} - \mathbf{\hat{F}}^x_{i-1/2,j,k}
+    \right]\\
+    &- \frac{1}{\Delta y} \mathcal{A}_{i,j,k}^n \cdot \left[
+    \mathbf{F}^y_{i,j+1/2,k} - \mathbf{{F}}^z_{i,j-1/2,k}
+    \right]\\ 
+    &- \frac{1}{\Delta x^3} \mathcal{A}_{i,j,k}^n \cdot \left[
+    \mathbf{F}^z_{i,j,k+1/2} - \mathbf{F}^z_{i,j,k-1/2}
+    \right]\\
+    & + \mathcal{A}_{i,j,k} \cdot \mathbf{S}_{i,j,k} := \mathcal{R}(\mathbf{U}),
+\end{split}
+\label{eq:pvrs}
+\end{equation}
+
+\noindent where $\mathbf{U}_{i,j,k}$ is the cell average value of the primitive variables $\mathbf{u}$, $\mathcal{A}_{i,j,k} := (\partial \mathbf{q}/\partial \mathbf{u})^{-1}$ and where the numerical fluxes $\mathbf{F}$ may be computed using an approximate Riemann solver. This algorithm is also implemented in \textit{aztekas} and is used for some numerical tests presented in this work.
+
+\subsubsection{Ghost cells}
+\label{subsubsec:ghost}
+
+In order to implement the boundary conditions, it is necessary to extend the numerical domain further away from the original region of interest. These extended cells are often referred as \textit{ghost cells}~\citep[see for example][]{leveque2002,hindenlang2019}. The number of ghost cells needed for a problem depends on the stencil used to reconstruct the primitive variables. For example, for linear reconstructions as MINMOD or MC, only 1 ghost cells is needed for the boundary conditions, but for a WENO5 reconstruction, which uses three stencils of three cells each, at least three ghost cells are needed in order implement the boundary conditions.

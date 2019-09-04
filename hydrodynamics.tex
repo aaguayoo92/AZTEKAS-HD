@@ -1,0 +1,87 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%% Hydrodynamics %%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Hydrodynamics}
+\label{sec:HD}
+
+The Euler equations in the non-relativistic regime written in a balanced
+form are~\citep[see][]{landau1987} (using Einstein notation):
+
+%%%%%%%%%%%%%%%
+%% Equations %%
+%%%%%%%%%%%%%%%
+\begin{equation}
+    \frac{\partial \rho}{\partial t} + \nabla_j \left( \rho u^j \right) = 0,
+\end{equation}
+\begin{equation}
+    \frac{\partial E}{\partial t} + \nabla_j \left[ (E + p) u^j \right] = \Gamma
+    - \Lambda + f_j u^j,
+\end{equation} 
+\begin{equation}
+    \frac{\partial \left( \rho u^i \right)}{\partial t} + \nabla_j \left( \rho
+    u^i u^j \right) + \nabla^i p = f^i,
+\end{equation} 
+
+\noindent where $\rho$ is the mass density, $u^i = \mathrm{d}x^i/\mathrm{d}t$ is
+the velocity vector, $p$ is the pressure and $E$ is the total energy density.
+We define the covariant derivative $\nabla_i$
+inverse three-dimensional metric tensor is defined as
+$\gamma^{ij}$, and so $\nabla^j = \gamma^{ij} \nabla_i$, $\Gamma -
+\Lambda$ represents the net energy gain/loss per unit volume and $\vec{f}$
+are the external forces per unit of mass acting on the fluid, such as gravity.
+
+In order to close the system, we need an equation for the total energy
+density. In general,
+
+%%%%%%%%%%%%%%
+%% Equation %%
+%%%%%%%%%%%%%%
+\begin{equation}
+    E = \frac{1}{2}\rho\, (u_j u^j) + \rho \epsilon,
+\end{equation}
+
+\noindent where we define $u_i = \gamma_{ij}u^j$ and $\epsilon$ is the internal energy of
+the fluid, which follows an equation of state (EoS) of the form $\epsilon =
+\epsilon(\rho,p)$. For \textit{aztekas}, we adopted a polytropic EoS:
+%%%%%%%%%%%%%%
+%% Equation %%
+%%%%%%%%%%%%%%
+\begin{equation}
+    \epsilon = \frac{p}{\rho (\gamma - 1)},
+\end{equation}
+
+\noindent where $\gamma$ is the polytropic index of the gas. Different and
+more realistic both analytic and numerical EOS had been developed to study
+either gases~\citep[cf.][]{ryu2006} or more complex systems like neutron
+stars~\citep[cf.][]{zhu2018}, but the polytropic gas approximation remains
+a valid and good approximation for many astrophysical phenomena.
+
+The primitive and conservative variables, as well as the fluxes and sources
+terms for this system, using index  $i$ to represent one specific flux
+direction and $j$ all three spatial directions, are:
+
+%%%%%%%%%%%%%%%
+%% Equations %%
+%%%%%%%%%%%%%%%
+\begin{equation}
+    \mathbf{u} = \left( \rho, p, v^j \right),
+\end{equation}
+\begin{equation}
+    \mathbf{q} = \left( \rho, E, \rho v^j \right),
+\end{equation}
+\begin{equation}
+    \mathbf{f}^i = \left( \rho v^i, [E + p]v^i, \rho v^i v^j + p\delta^{ij} \right),
+\end{equation}
+
+\noindent and
+
+\begin{equation}
+    \mathbf{s} = \left( 0, \Gamma - \Lambda + \vec{f}\cdot \vec{v}, f^j \right).
+\end{equation}
+
+\noindent where $v^j$ is the physical velocity vector, which is related with $u^j$ as
+\begin{equation}
+    v^j = \sqrt{\gamma_{(jj)}} u^j,
+\end{equation}
+
+\noindent where $\gamma_{(jj)}$ are the three-dimensional metric components along the diagonal (no implicit sumation is intended).

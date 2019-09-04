@@ -1,0 +1,73 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%% Introduction %%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Introduction}
+\label{sec:intro}
+
+
+The study of fluid dynamics represents an important
+part for the understanding of our universe. Although gravity is the
+dominant force in the universe, it is the gas and the plasma, and their
+interaction with the gravitational and magnetic fields, the responsible
+of a very wide range of astrophysical phenomena. The plasma in the
+universe  is the most abundant state of matter.   It can 
+be found from stellar up to cosmological scales and the gas dynamics
+allows a comprehensive study for  its evolution and behavior.  The
+understanding of the coupling with magnetic
+fields and radiative processes due to the micro physics of its particles is
+essential to model different astronomical observations.
+
+The equations that describe the dynamics of flows are described by the
+Euler equations. They constitute a set of non-linear system of hyperbolic
+partial differential equations that in most cases have no exact solutions.
+This is something very common in physical problems dealing with a set
+of partial differential equations.  Usually exact analytic solutions
+can be found in cases of highly idealized, symmetrical or self-similar
+problems~\citep[see for example][]{landau1987,sedov1959,toro2009,edgar2004} %(\textcolor{red}{CITA
+%A LANDAU, ZELDOVICH, TORO, SEDOV, EDGAR}).  
+However, in the general
+case where more complex scenarios appear, these equations have to be
+solved numerically.
+
+Numerical hydrodynamics and, in general, the study of hyperbolic
+partial differential equations, constitutes a full branch of study
+in physics. Some relevant introductory literature in this topic are the
+books by \citet{toro2009}, \citet{leveque2002} and \citet{laney1998},
+\textcolor{red}{MAS}.  \textcolor{blue}{The appendix of the article by \citet{aguayo2018} is
+a simple comprehensive way in which finite volume methods applied to fluid
+dynamics in astrophysics is described.} The continuous search for new and better algorithms to
+solve these equations has lead to the development of robust and more accurate
+computational codes. These have been used to test and further extend
+theoretical models that continuously enrich our understanding of the universe.
+
+In the special case of hydrodynamics, one of the first numerical codes
+to be extensively used for astrophysical hydrodynamics is the ZEUS
+code~\citep{stone1992}, which uses a finite difference scheme for the
+discretization of the differential equations.  Even more, ZEUS has a GNU
+Public License (GPL) for its distribution which through the years has made it a
+first start for many researchers.  Nowadays more accurate and efficient
+numerical methods have been developed reducing computational costs.  Some
+of the current hydrodynamical codes that are available to the community are
+the following:
+
+\begin{itemize}
+  \item PLUTO, reference, description and license.
+  \item FLASH, the license use is very restrictive
+\end{itemize}
+
+  At the very end it is not only important to have a very robust
+hydrodynamical code, but also make it freely available (with a GNU GPL
+license or equivalent) to the community, ideally expecting more programmers
+to join forces to further improve it.
+
+  In this article we are not aiming at presenting a new different
+state-of-the-art code.  Our intention is 
+to present and validate our free software (open source, open access)
+\textit{aztekas} which has a GNU GPL license, with the aim 
+to invite the community to use it and contribue to its development. We also 
+include in this article several standard benchmark tests for code
+validation, together with the precise form of the algorithms used for its
+construction. 
+
+
